@@ -3,127 +3,2248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="LifeLevel">
 <meta name="theme-color" content="#6c63ff">
+
 <link rel="manifest" href="manifest.json">
+
 <title>LifeLevel</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e5e7eb;--accent:#6c63ff;--accent2:#8b83ff;--good:#25a56a;--warn:#f59e0b;--shadow:0 8px 25px rgba(20,30,60,.08)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body.dark{--bg:#111522;--card:#1b2130;--text:#f4f6fb;--muted:#aab2c3;--line:#30384b;--shadow:0 8px 25px rgba(0,0,0,.22)}
-.app{max-width:1000px;margin:auto;padding:18px}.top{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;position:sticky;top:0;background:var(--bg);z-index:5}
-.tab{border:1px solid var(--line);background:var(--card);color:var(--text);padding:10px 14px;border-radius:12px;white-space:nowrap;cursor:pointer;font-weight:700}.tab.active{background:var(--accent);color:white;border-color:var(--accent)}
-h1{font-size:28px;margin:12px 0 5px}.sub{color:var(--muted);margin-bottom:18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:var(--shadow)}.wide{grid-column:1/-1}
-.stat{font-size:28px;font-weight:800}.label{color:var(--muted);font-size:13px;margin-top:3px}
-.progress{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin:10px 0}.progress>div{height:100%;background:var(--accent);border-radius:99px}
-.task{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.task:last-child{border:0}.task input{width:20px;height:20px;accent-color:var(--accent)}.task.done span{text-decoration:line-through;color:var(--muted)}
-button,.input{font:inherit}.btn{border:0;background:var(--accent);color:white;border-radius:11px;padding:9px 13px;font-weight:700;cursor:pointer}.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
-.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.input{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:9px;width:100%}
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.day{aspect-ratio:1;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px}.day.complete{background:var(--good);color:white;border-color:var(--good);font-weight:800}.day.today{outline:2px solid var(--accent)}
-.coin{color:#c58a00;font-weight:800}.xp{color:var(--accent);font-weight:800}.streak{color:#e85d3f;font-weight:800}
-.hidden{display:none}.empty{color:var(--muted);padding:20px 0;text-align:center}.small{font-size:13px;color:var(--muted)}
-@media(max-width:650px){.grid{grid-template-columns:1fr}.app{padding:12px}h1{font-size:24px}}
+:root {
+  --bg:#f5f7fb;
+  --card:#fff;
+  --text:#172033;
+  --muted:#667085;
+  --line:#e5e7eb;
+  --accent:#6c63ff;
+  --good:#25a56a;
+  --shadow:0 8px 25px rgba(20,30,60,.08);
+}
+
+* {
+  box-sizing:border-box;
+}
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+body.dark {
+  --bg:#111522;
+  --card:#1b2130;
+  --text:#f4f6fb;
+  --muted:#aab2c3;
+  --line:#30384b;
+  --shadow:0 8px 25px rgba(0,0,0,.22);
+}
+
+.app {
+  max-width:1000px;
+  margin:auto;
+  padding:14px;
+}
+
+.top {
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:12px;
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:5;
+}
+
+.tab {
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:12px;
+  white-space:nowrap;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.tab.active {
+  background:var(--accent);
+  color:white;
+  border-color:var(--accent);
+}
+
+h1 {
+  font-size:28px;
+  margin:12px 0 5px;
+}
+
+.sub {
+  color:var(--muted);
+  margin-bottom:18px;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.card {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:17px;
+  box-shadow:var(--shadow);
+}
+
+.wide {
+  grid-column:1/-1;
+}
+
+.stat {
+  font-size:28px;
+  font-weight:800;
+}
+
+.label {
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+.progress {
+  height:10px;
+  background:var(--line);
+  border-radius:99px;
+  overflow:hidden;
+  margin:10px 0;
+}
+
+.progress>div {
+  height:100%;
+  background:var(--accent);
+  border-radius:99px;
+}
+
+.task {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.task:last-child {
+  border:0;
+}
+
+.task input {
+  width:20px;
+  height:20px;
+  accent-color:var(--accent);
+}
+
+.task.done span {
+  text-decoration:line-through;
+  color:var(--muted);
+}
+
+.btn {
+  border:0;
+  background:var(--accent);
+  color:white;
+  border-radius:11px;
+  padding:9px 13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.secondary {
+  background:transparent;
+  color:var(--text);
+  border:1px solid var(--line);
+}
+
+.row {
+  display:flex;
+  gap:9px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.input,
+select {
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:10px;
+  padding:9px;
+  font:inherit;
+}
+
+.input {
+  width:100%;
+}
+
+.calendar {
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+}
+
+.day {
+  aspect-ratio:1;
+  border:1px solid var(--line);
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+}
+
+.day.complete {
+  background:var(--good);
+  color:white;
+  border-color:var(--good);
+  font-weight:800;
+}
+
+.day.today {
+  outline:2px solid var(--accent);
+}
+
+.section-title {
+  margin:20px 0 8px;
+  font-size:16px;
+  color:var(--muted);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.small {
+  font-size:13px;
+  color:var(--muted);
+}
+
+.coin {
+  color:#c58a00;
+  font-weight:800;
+}
+
+.xp {
+  color:var(--accent);
+  font-weight:800;
+}
+
+.streak {
+  color:#e85d3f;
+  font-weight:800;
+}
+
+.hidden {
+  display:none;
+}
+
+.empty {
+  color:var(--muted);
+  padding:20px 0;
+  text-align:center;
+}
+
+.auth {
+  max-width:520px;
+  margin:50px auto;
+}
+
+.status {
+  padding:10px;
+  border-radius:10px;
+  background:var(--line);
+  margin:10px 0;
+  font-size:13px;
+}
+
+@media(max-width:650px) {
+  .grid {
+    grid-template-columns:1fr;
+  }
+
+  .app {
+    padding:10px;
+  }
+
+  h1 {
+    font-size:24px;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
-  <nav class="top" id="nav"></nav>
-  <main id="content"></main>
+
+  <div id="auth"></div>
+
+  <div id="appUI" class="hidden">
+
+    <nav class="top" id="nav"></nav>
+
+    <main id="content"></main>
+
+  </div>
+
 </div>
+
 <script>
-const defaultHabits=[
- {id:1,name:"Brush teeth",xp:10,coins:5},
- {id:2,name:"Drink water",xp:10,coins:5},
- {id:3,name:"Move your body",xp:20,coins:8},
- {id:4,name:"Tidy up",xp:15,coins:6}
+
+/* ================================
+   SUPABASE CONNECTION
+================================ */
+
+const SUPABASE_URL =
+"https://txbqnjsaihijciphdwsu.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_6JXwWE8qHDy_UAq2Mhsnkg_WsME0AlF";
+
+const client =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* ================================
+   DEFAULT HABITS
+================================ */
+
+const defaults = [
+
+ {
+  id:1,
+  name:"Brush teeth",
+  xp:10,
+  coins:5,
+  section:"Morning",
+  time:"08:00"
+ },
+
+ {
+  id:2,
+  name:"Drink water",
+  xp:10,
+  coins:5,
+  section:"Daytime",
+  time:"12:00"
+ },
+
+ {
+  id:3,
+  name:"Move your body",
+  xp:20,
+  coins:8,
+  section:"Daytime",
+  time:"16:00"
+ },
+
+ {
+  id:4,
+  name:"Tidy up",
+  xp:15,
+  coins:6,
+  section:"Nighttime",
+  time:"20:00"
+ }
+
 ];
-let data=JSON.parse(localStorage.getItem("habitQuest")||"null")||{
- habits:defaultHabits, done:{}, sleep:{}, water:{}, xp:0,coins:0,skip:0,level:1,theme:"system",tab:"home"
+
+
+/* ================================
+   APP DATA
+================================ */
+
+let data = {
+
+ habits:defaults,
+
+ done:{},
+
+ skipped:{},
+
+ sleep:{},
+
+ water:{},
+
+ xp:0,
+
+ coins:0,
+
+ skip:0,
+
+ level:1,
+
+ theme:"system",
+
+ tab:"home"
+
 };
-function save(){localStorage.setItem("habitQuest",JSON.stringify(data))}
-function key(d=new Date()){return d.toISOString().slice(0,10)}
-function completedCount(d=key()){return data.habits.filter(h=>data.done[d]?.includes(h.id)).length}
-function allDone(d){return data.habits.length>0 && completedCount(d)===data.habits.length}
-function streak(){
- let n=0,d=new Date();
- while(allDone(key(d))){n++;d.setDate(d.getDate()-1)}
+
+let user=null;
+
+let saveTimer=null;
+
+
+/* ================================
+   LOCAL STORAGE
+================================ */
+
+function saveLocal() {
+
+ localStorage.setItem(
+  "lifelevel-local",
+  JSON.stringify(data)
+ );
+
+}
+
+
+function loadLocal() {
+
+ try {
+
+  let x =
+   JSON.parse(
+    localStorage.getItem(
+     "lifelevel-local"
+    )
+   );
+
+  if(x) {
+
+   data={
+    ...data,
+    ...x
+   };
+
+  }
+
+ } catch(e) {}
+
+}
+
+
+/* ================================
+   DATE
+================================ */
+
+function dayKey(d=new Date()) {
+
+ return new Date(
+   d.getTime() -
+   d.getTimezoneOffset()*60000
+ )
+ .toISOString()
+ .slice(0,10);
+
+}
+
+
+/* ================================
+   COMPLETION
+================================ */
+
+function countDone(
+ d=dayKey()
+) {
+
+ return data.habits.filter(
+
+  h =>
+
+   (data.done[d]||[])
+    .includes(h.id)
+
+   ||
+
+   (data.skipped[d]||[])
+    .includes(h.id)
+
+ ).length;
+
+}
+
+
+function allDone(d) {
+
+ return (
+
+  data.habits.length>0 &&
+
+  countDone(d) ===
+  data.habits.length
+
+ );
+
+}
+
+
+function streak() {
+
+ let n=0;
+
+ let d=new Date();
+
+ while(
+  allDone(dayKey(d))
+ ) {
+
+  n++;
+
+  d.setDate(
+   d.getDate()-1
+  );
+
+ }
+
  return n;
+
 }
-function renderNav(){
- const tabs=[["home","🏠 Home"],["habits","✅ Habits"],["water","💧 Water"],["sleep","😴 Sleep"],["calendar","📅 Calendar"],["rewards","🎮 Rewards"],["settings","⚙️ Settings"]];
- nav.innerHTML=tabs.map(([id,t])=>`<button class="tab ${data.tab===id?"active":""}" onclick="go('${id}')">${t}</button>`).join("");
+
+
+/* ================================
+   LEVELS
+================================ */
+
+function checkLevel() {
+
+ data.level =
+  Math.floor(
+   data.xp/100
+  )+1;
+
 }
-function go(t){data.tab=t;save();render()}
-function shell(title,sub,body){content.innerHTML=`<h1>${title}</h1><div class="sub">${sub}</div>${body}`}
-function renderHome(){
- let c=completedCount(), total=data.habits.length, pct=total?Math.round(c/total*100):0;
- shell("Habit Quest","Small wins, tracked over time.",`
- <div class="grid">
- <div class="card"><div class="label">Today</div><div class="stat">${c}/${total}</div><div class="progress"><div style="width:${pct}%"></div></div><div class="small">${pct}% of today's tasks</div></div>
- <div class="card"><div class="label">🔥 All-tasks streak</div><div class="stat streak">${streak()} day${streak()===1?"":"s"}</div></div>
- <div class="card"><div class="label">⭐ Level</div><div class="stat">${data.level}</div><div class="small"><span class="xp">${data.xp} XP</span></div></div>
- <div class="card"><div class="label">🪙 Coins</div><div class="stat coin">${data.coins}</div><div class="small">Skip tokens: ${data.skip}</div></div>
- <div class="card wide"><h3>Today's tasks</h3>${taskList(true)}</div>
- <div class="card"><h3>💧 Water</h3><div class="stat">${data.water[key()]||0} cups</div><button class="btn" onclick="addWater()">+ 1 cup</button></div>
- <div class="card"><h3>😴 Sleep</h3><div class="stat">${data.sleep[key()]||"—"} hrs</div><div class="small">Log it in Sleep</div></div>
- </div>`);
+
+
+/* ================================
+   THEME
+================================ */
+
+function applyTheme() {
+
+ const dark =
+  data.theme==="dark" ||
+
+  (
+   data.theme==="system" &&
+   matchMedia(
+    "(prefers-color-scheme: dark)"
+   ).matches
+  );
+
+ document.body.classList.toggle(
+  "dark",
+  dark
+ );
+
 }
-function taskList(home){
- let d=key(), arr=data.done[d]||[];
- if(!data.habits.length)return `<div class="empty">No habits yet. Add one in Habits.</div>`;
- return data.habits.map(h=>`<label class="task ${arr.includes(h.id)?"done":""}">
- <input type="checkbox" ${arr.includes(h.id)?"checked":""} onchange="toggle(${h.id},this.checked)">
- <span>${h.name} <small>+${h.xp} XP · +${h.coins} coins</small></span></label>`).join("");
+
+
+/* ================================
+   SAVE + CLOUD SYNC
+================================ */
+
+function save() {
+
+ saveLocal();
+
+ clearTimeout(saveTimer);
+
+ saveTimer=setTimeout(
+  syncCloud,
+  250
+ );
+
 }
-function toggle(id,checked){
- let d=key(),arr=data.done[d]||[],was=arr.includes(id);
- if(checked&&!was){arr.push(id);let h=data.habits.find(x=>x.id===id);data.xp+=h.xp;data.coins+=h.coins;checkLevel()}
- if(!checked&&was){arr=arr.filter(x=>x!==id);let h=data.habits.find(x=>x.id===id);data.xp=Math.max(0,data.xp-h.xp);data.coins=Math.max(0,data.coins-h.coins)}
- data.done[d]=arr;save();render();
+
+
+async function syncCloud() {
+
+ if(!user) return;
+
+ const result =
+  await client
+   .from("lifellevel_data")
+   .upsert(
+
+    {
+     user_id:user.id,
+
+     data:data,
+
+     updated_at:
+      new Date().toISOString()
+
+    },
+
+    {
+     onConflict:"user_id"
+    }
+
+   );
+
+ if(result.error) {
+
+  console.warn(
+   "Sync error:",
+   result.error.message
+  );
+
+ }
+
 }
-function checkLevel(){let newLevel=Math.floor(data.xp/100)+1;if(newLevel>data.level)data.level=newLevel}
-function addHabit(){
- let name=prompt("Habit name");if(!name?.trim())return;
- data.habits.push({id:Date.now(),name:name.trim(),xp:10,coins:5});save();render()
+
+
+async function loadCloud() {
+
+ if(!user) return;
+
+ const result =
+  await client
+   .from("lifellevel_data")
+   .select("data")
+   .eq(
+    "user_id",
+    user.id
+   )
+   .maybeSingle();
+
+ if(result.error) {
+
+  console.warn(
+   result.error.message
+  );
+
+  return;
+
+ }
+
+ if(result.data?.data) {
+
+  data={
+   ...data,
+   ...result.data.data
+  };
+
+  saveLocal();
+
+ } else {
+
+  await syncCloud();
+
+ }
+
 }
-function skipHabit(id){
- if(data.skip<1){alert("You don't have a Skip Token yet. Earn coins and exchange them in Rewards.");return}
- let d=key(),arr=data.done[d]||[]; if(arr.includes(id))return;
- data.skip--; if(!data.done[d])data.done[d]=[]; data.done[d].push(id); save(); render();
+
+
+/* ================================
+   AUTHENTICATION
+================================ */
+
+async function authSubmit(mode) {
+
+ const email =
+  document
+   .getElementById("email")
+   .value
+   .trim();
+
+ const password =
+  document
+   .getElementById("password")
+   .value;
+
+ const msg =
+  document.getElementById(
+   "authMsg"
+  );
+
+ if(!email || !password) {
+
+  msg.textContent =
+   "Enter an email and password.";
+
+  return;
+
+ }
+
+ msg.textContent="Working…";
+
+ let result;
+
+ if(mode==="signup") {
+
+  result =
+   await client.auth.signUp(
+    {
+     email,
+     password
+    }
+   );
+
+ } else {
+
+  result =
+   await client.auth.signInWithPassword(
+    {
+     email,
+     password
+    }
+   );
+
+ }
+
+ if(result.error) {
+
+  msg.textContent =
+   result.error.message;
+
+  return;
+
+ }
+
+ if(
+  mode==="signup" &&
+  !result.data.session
+ ) {
+
+  msg.textContent =
+   "Account created. Check your email if confirmation is required, then sign in.";
+
+ }
+
 }
-function renderHabits(){shell("Habits","Complete a task or use a Skip Token when you need one.",`
-<div class="card"><div class="row"><button class="btn" onclick="addHabit()">＋ Add habit</button><span class="small">Default rewards: 10 XP · 5 coins</span></div>${data.habits.map(h=>`<div class="task"><span style="flex:1">${h.name}<br><small>+${h.xp} XP · +${h.coins} coins</small></span><button class="btn secondary" onclick="skipHabit(${h.id})">⏭ Skip</button></div>`).join("")}</div>`)}
-function addWater(){let d=key();data.water[d]=(data.water[d]||0)+1;save();render()}
-function renderWater(){let n=data.water[key()]||0,goal=8,p=Math.min(100,Math.round(n/goal*100));shell("Hydration","Track water without turning it into a punishment.",`
-<div class="grid"><div class="card"><div class="label">Today</div><div class="stat">${n} / ${goal} cups</div><div class="progress"><div style="width:${p}%"></div></div><div class="row"><button class="btn" onclick="addWater()">＋ 1 cup</button><button class="btn secondary" onclick="waterMinus()">− 1</button></div></div>
-<div class="card"><h3>Daily goal</h3><input class="input" type="number" min="1" value="${goal}" onchange="this.dataset.goal=this.value;alert('The demo uses 8 cups as its default goal.')" /><div class="small">You can customize this in a future version.</div></div></div>`)}
-function waterMinus(){let d=key();data.water[d]=Math.max(0,(data.water[d]||0)-1);save();render()}
-function renderSleep(){shell("Sleep","Log how much sleep you got each night.",`
-<div class="grid"><div class="card"><h3>Tonight's sleep</h3><div class="row"><input id="sleepInput" class="input" type="number" min="0" max="24" step=".25" placeholder="Hours slept" value="${data.sleep[key()]||""}"><button class="btn" onclick="saveSleep()">Save</button></div></div>
-<div class="card"><h3>Recent nights</h3>${Object.entries(data.sleep).sort().slice(-7).reverse().map(([d,h])=>`<div class="task"><span>${d}</span><strong>${h} hrs</strong></div>`).join("")||"<div class='empty'>No sleep logged yet.</div>"}</div></div>`)}
-function saveSleep(){let v=parseFloat(document.getElementById("sleepInput").value);if(!isFinite(v)||v<0||v>24)return;data.sleep[key()]=v;save();render()}
-function renderCalendar(){
- let now=new Date(),y=now.getFullYear(),m=now.getMonth(),first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),cells="";
- for(let i=0;i<first.getDay();i++)cells+="<div></div>";
- for(let d=1;d<=days;d++){let dt=new Date(y,m,d),k=key(dt),cl=allDone(k)?"complete ":"";if(k===key())cl+="today";cells+=`<div class="day ${cl}" title="${k}">${d}</div>`}
- shell("Calendar","Green days are days when every task was completed.",`<div class="card"><h3>${now.toLocaleString(undefined,{month:"long",year:"numeric"})}</h3><div class="calendar">${cells}</div><p class="small">🟢 All tasks completed · outline = today</p></div>`)
+
+
+async function logout() {
+
+ await client.auth.signOut();
+
+ location.reload();
+
 }
-function renderRewards(){shell("Rewards","Your progress becomes XP, levels, coins, and occasional skips.",`
-<div class="grid"><div class="card"><div class="label">⭐ XP</div><div class="stat">${data.xp}</div><div class="progress"><div style="width:${data.xp%100}%"></div></div><div class="small">Level ${data.level} · ${100-(data.xp%100)} XP to next level</div></div>
-<div class="card"><div class="label">🪙 Coins</div><div class="stat coin">${data.coins}</div><button class="btn" onclick="buySkip()">Buy Skip Token · 50 coins</button></div>
-<div class="card wide"><div class="label">⏭️ Skip Tokens</div><div class="stat">${data.skip}</div><div class="small">Use one to mark a task as skipped without earning its task reward.</div></div></div>`)}
-function buySkip(){if(data.coins<50){alert("You need 50 coins.");return}data.coins-=50;data.skip++;save();render()}
-function renderSettings(){shell("Settings","Customize how Habit Quest looks.",`
-<div class="card"><h3>Appearance</h3><div class="row"><button class="btn ${data.theme==="light"?"":"secondary"}" onclick="setTheme('light')">☀️ Light</button><button class="btn ${data.theme==="dark"?"":"secondary"}" onclick="setTheme('dark')">🌙 Dark</button><button class="btn ${data.theme==="system"?"":"secondary"}" onclick="setTheme('system')">📱 System</button></div><p class="small">Your choice is saved on this device.</p></div>
-<div class="card"><h3>Reset demo data</h3><button class="btn secondary" onclick="resetData()">Reset everything</button></div>`)}
-function setTheme(t){data.theme=t;applyTheme();save();render()}
-function applyTheme(){let dark=data.theme==="dark"||(data.theme==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.body.classList.toggle("dark",dark)}
-function resetData(){if(confirm("Reset all Habit Quest data?")){localStorage.removeItem("habitQuest");location.reload()}}
-function render(){applyTheme();renderNav();({home:renderHome,habits:renderHabits,water:renderWater,sleep:renderSleep,calendar:renderCalendar,rewards:renderRewards,settings:renderSettings}[data.tab]||renderHome)()}
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change",applyTheme);render();
+
+
+/* ================================
+   LOGIN SCREEN
+================================ */
+
+function renderAuth() {
+
+ auth.innerHTML=`
+
+ <div class="auth card">
+
+  <h1>LifeLevel</h1>
+
+  <div class="sub">
+   Sign in to sync your LifeLevel
+   progress across your devices.
+  </div>
+
+  <input
+   id="email"
+   class="input"
+   type="email"
+   placeholder="Email"
+  >
+
+  <br><br>
+
+  <input
+   id="password"
+   class="input"
+   type="password"
+   placeholder="Password"
+  >
+
+  <br><br>
+
+  <div class="row">
+
+   <button
+    class="btn"
+    onclick="authSubmit('signin')"
+   >
+    Sign in
+   </button>
+
+   <button
+    class="btn secondary"
+    onclick="authSubmit('signup')"
+   >
+    Create account
+   </button>
+
+  </div>
+
+  <div
+   id="authMsg"
+   class="status"
+  >
+   Your data stays associated
+   with your account.
+  </div>
+
+ </div>
+
+ `;
+
+}
+
+
+/* ================================
+   NAVIGATION
+================================ */
+
+function renderNav() {
+
+ const tabs=[
+
+  ["home","🏠 Home"],
+
+  ["habits","✅ Habits"],
+
+  ["water","💧 Water"],
+
+  ["sleep","😴 Sleep"],
+
+  ["calendar","📅 Calendar"],
+
+  ["rewards","🎮 Rewards"],
+
+  ["settings","⚙️ Settings"]
+
+ ];
+
+ nav.innerHTML =
+  tabs.map(
+
+   ([id,title]) => `
+
+    <button
+     class="tab ${
+      data.tab===id
+       ?"active"
+       :""
+     }"
+     onclick="go('${id}')"
+    >
+     ${title}
+    </button>
+
+   `
+
+  ).join("");
+
+}
+
+
+function go(tab) {
+
+ data.tab=tab;
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   COMMON PAGE
+================================ */
+
+function shell(
+ title,
+ subtitle,
+ body
+) {
+
+ content.innerHTML=`
+
+  <h1>${title}</h1>
+
+  <div class="sub">
+   ${subtitle}
+  </div>
+
+  ${body}
+
+ `;
+
+}
+
+
+/* ================================
+   HABIT GROUPS
+================================ */
+
+function groupedTasks(
+ d=dayKey()
+) {
+
+ const groups=[
+
+  "Morning",
+
+  "Daytime",
+
+  "Evening",
+
+  "Nighttime",
+
+  "Anytime"
+
+ ];
+
+ return groups.map(
+
+  group => {
+
+   const habits =
+    data.habits.filter(
+
+     h =>
+      (h.section||
+       "Anytime") === group
+
+    );
+
+   if(!habits.length)
+    return "";
+
+   return `
+
+    <div class="section-title">
+     ${group}
+    </div>
+
+    ${habits
+      .map(
+       h =>
+        taskRow(h,d)
+      )
+      .join("")
+    }
+
+   `;
+
+  }
+
+ ).join("")
+
+ ||
+
+ `<div class="empty">
+   No habits yet.
+  </div>`;
+
+}
+
+
+/* ================================
+   HABIT ROW
+================================ */
+
+function taskRow(h,d) {
+
+ const done =
+  (data.done[d]||[])
+   .includes(h.id);
+
+ const skipped =
+  (data.skipped[d]||[])
+   .includes(h.id);
+
+ return `
+
+ <label
+  class="task ${
+   done||skipped
+    ?"done"
+    :""
+  }"
+ >
+
+  <input
+   type="checkbox"
+   ${
+    done||skipped
+     ?"checked"
+     :""
+   }
+   onchange="
+    toggle(
+     ${h.id},
+     this.checked,
+     '${d}'
+    )
+   "
+  >
+
+  <span style="flex:1">
+
+   <strong>
+    ${h.name}
+   </strong>
+
+   <br>
+
+   <small>
+    ⏰ ${formatTime(h.time)}
+    · +${h.xp} XP
+    · +${h.coins} coins
+    ${
+     skipped
+      ?" · skipped"
+      :""
+    }
+   </small>
+
+  </span>
+
+ </label>
+
+ `;
+
+}
+
+
+/* ================================
+   TIME
+================================ */
+
+function formatTime(t) {
+
+ if(!t)
+  return "Any time";
+
+ let [h,m] =
+  t.split(":")
+   .map(Number);
+
+ let ap =
+  h>=12
+   ?"PM"
+   :"AM";
+
+ let hh =
+  h%12||12;
+
+ return `
+  ${hh}:${String(m).padStart(2,"0")} ${ap}
+ `;
+
+}
+
+
+/* ================================
+   HOME
+================================ */
+
+function renderHome() {
+
+ let completed =
+  countDone();
+
+ let total =
+  data.habits.length;
+
+ let pct =
+  total
+   ?Math.round(
+     completed/total*100
+    )
+   :0;
+
+ shell(
+
+  "LifeLevel",
+
+  "Small wins, tracked over time.",
+
+  `
+
+  <div class="grid">
+
+   <div class="card">
+
+    <div class="label">
+     Today
+    </div>
+
+    <div class="stat">
+     ${completed}/${total}
+    </div>
+
+    <div class="progress">
+     <div
+      style="width:${pct}%"
+     ></div>
+    </div>
+
+    <div class="small">
+     ${pct}% complete
+    </div>
+
+   </div>
+
+
+   <div class="card">
+
+    <div class="label">
+     🔥 All-tasks streak
+    </div>
+
+    <div class="stat streak">
+     ${streak()}
+     day${streak()===1?"":"s"}
+    </div>
+
+   </div>
+
+
+   <div class="card">
+
+    <div class="label">
+     ⭐ Level
+    </div>
+
+    <div class="stat">
+     ${data.level}
+    </div>
+
+    <div class="small xp">
+     ${data.xp} XP
+    </div>
+
+   </div>
+
+
+   <div class="card">
+
+    <div class="label">
+     🪙 Coins
+    </div>
+
+    <div class="stat coin">
+     ${data.coins}
+    </div>
+
+    <div class="small">
+     Skip Tokens: ${data.skip}
+    </div>
+
+   </div>
+
+
+   <div class="card wide">
+
+    <h3>
+     Today's routine
+    </h3>
+
+    ${groupedTasks()}
+
+   </div>
+
+
+   <div class="card">
+
+    <h3>
+     💧 Water
+    </h3>
+
+    <div class="stat">
+     ${data.water[dayKey()]||0}
+     cups
+    </div>
+
+    <button
+     class="btn"
+     onclick="addWater()"
+    >
+     + 1 cup
+    </button>
+
+   </div>
+
+
+   <div class="card">
+
+    <h3>
+     😴 Sleep
+    </h3>
+
+    <div class="stat">
+     ${
+      data.sleep[dayKey()]
+       ??"—"
+     }
+     hrs
+    </div>
+
+   </div>
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+/* ================================
+   CHECK HABIT
+================================ */
+
+function toggle(
+ id,
+ checked,
+ d
+) {
+
+ let done =
+  data.done[d]||[];
+
+ let skipped =
+  data.skipped[d]||[];
+
+ let habit =
+  data.habits.find(
+   h=>h.id===id
+  );
+
+ done =
+  done.filter(
+   x=>x!==id
+  );
+
+ skipped =
+  skipped.filter(
+   x=>x!==id
+  );
+
+ if(checked) {
+
+  done.push(id);
+
+  data.xp += habit.xp;
+
+  data.coins += habit.coins;
+
+  checkLevel();
+
+ } else {
+
+  data.xp =
+   Math.max(
+    0,
+    data.xp-habit.xp
+   );
+
+  data.coins =
+   Math.max(
+    0,
+    data.coins-habit.coins
+   );
+
+  checkLevel();
+
+ }
+
+ data.done[d]=done;
+
+ data.skipped[d]=skipped;
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   ADD HABIT
+================================ */
+
+function addHabit() {
+
+ const name =
+  prompt(
+   "Habit name"
+  );
+
+ if(!name?.trim())
+  return;
+
+ const section =
+  prompt(
+   "Section: Morning, Daytime, Evening, Nighttime, or Anytime",
+   "Anytime"
+  ) || "Anytime";
+
+ const time =
+  prompt(
+   "Time (example: 08:30 or 20:00). Leave blank for anytime.",
+   ""
+  ) || "";
+
+ data.habits.push({
+
+  id:Date.now(),
+
+  name:name.trim(),
+
+  xp:10,
+
+  coins:5,
+
+  section:section.trim(),
+
+  time:time
+
+ });
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   EDIT HABIT
+================================ */
+
+function editHabit(id) {
+
+ let habit =
+  data.habits.find(
+   h=>h.id===id
+  );
+
+ if(!habit)
+  return;
+
+ let name =
+  prompt(
+   "Habit name",
+   habit.name
+  );
+
+ if(!name?.trim())
+  return;
+
+ let section =
+  prompt(
+   "Section",
+   habit.section||
+   "Anytime"
+  );
+
+ let time =
+  prompt(
+   "Time (HH:MM, e.g. 08:30). Leave blank for anytime.",
+   habit.time||""
+  );
+
+ habit.name =
+  name.trim();
+
+ habit.section =
+  section?.trim()||
+  "Anytime";
+
+ habit.time =
+  time?.trim()||
+  "";
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   DELETE HABIT
+================================ */
+
+function deleteHabit(id) {
+
+ if(
+  !confirm(
+   "Delete this habit?"
+  )
+ )
+  return;
+
+ data.habits =
+  data.habits.filter(
+   h=>h.id!==id
+  );
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   SKIP HABIT
+================================ */
+
+function skipHabit(id) {
+
+ if(data.skip<1) {
+
+  alert(
+   "You need a Skip Token. Earn coins and buy one in Rewards."
+  );
+
+  return;
+
+ }
+
+ const d=dayKey();
+
+ let skipped =
+  data.skipped[d]||[];
+
+ let done =
+  data.done[d]||[];
+
+ if(
+  skipped.includes(id)||
+  done.includes(id)
+ )
+  return;
+
+ data.skip--;
+
+ skipped.push(id);
+
+ data.skipped[d]=skipped;
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   HABITS PAGE
+================================ */
+
+function renderHabits() {
+
+ shell(
+
+  "Habits",
+
+  "Organize your routine and give each habit a time.",
+
+  `
+
+  <div class="card">
+
+   <button
+    class="btn"
+    onclick="addHabit()"
+   >
+    ＋ Add habit
+   </button>
+
+   ${
+    data.habits.map(
+
+     h=>`
+
+      <div class="task">
+
+       <span style="flex:1">
+
+        <strong>
+         ${h.name}
+        </strong>
+
+        <br>
+
+        <small>
+         ${h.section||"Anytime"}
+         · ⏰ ${formatTime(h.time)}
+         · +${h.xp} XP
+         · +${h.coins} coins
+        </small>
+
+       </span>
+
+       <button
+        class="btn secondary"
+        onclick="editHabit(${h.id})"
+       >
+        Edit
+       </button>
+
+       <button
+        class="btn secondary"
+        onclick="skipHabit(${h.id})"
+       >
+        ⏭
+       </button>
+
+       <button
+        class="btn secondary"
+        onclick="deleteHabit(${h.id})"
+       >
+        ×
+       </button>
+
+      </div>
+
+     `
+
+    ).join("")
+
+   }
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+/* ================================
+   WATER
+================================ */
+
+function addWater() {
+
+ let d=dayKey();
+
+ data.water[d] =
+  (data.water[d]||0)+1;
+
+ save();
+
+ render();
+
+}
+
+
+function waterMinus() {
+
+ let d=dayKey();
+
+ data.water[d] =
+  Math.max(
+   0,
+   (data.water[d]||0)-1
+  );
+
+ save();
+
+ render();
+
+}
+
+
+function renderWater() {
+
+ let n =
+  data.water[dayKey()]||0;
+
+ shell(
+
+  "Hydration",
+
+  "A simple daily water log.",
+
+  `
+
+  <div class="grid">
+
+   <div class="card">
+
+    <div class="stat">
+     ${n} cups
+    </div>
+
+    <div class="progress">
+
+     <div
+      style="
+       width:${Math.min(
+        100,
+        n/8*100
+       )}%
+      "
+     ></div>
+
+    </div>
+
+    <div class="row">
+
+     <button
+      class="btn"
+      onclick="addWater()"
+     >
+      ＋ 1 cup
+     </button>
+
+     <button
+      class="btn secondary"
+      onclick="waterMinus()"
+     >
+      − 1
+     </button>
+
+    </div>
+
+   </div>
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+/* ================================
+   SLEEP
+================================ */
+
+function renderSleep() {
+
+ shell(
+
+  "Sleep",
+
+  "Log your sleep for each day.",
+
+  `
+
+  <div class="grid">
+
+   <div class="card">
+
+    <h3>
+     Today's sleep
+    </h3>
+
+    <div class="row">
+
+     <input
+      id="sleepInput"
+      class="input"
+      type="number"
+      min="0"
+      max="24"
+      step=".25"
+      placeholder="Hours slept"
+      value="${
+       data.sleep[dayKey()]
+       ??""
+      }"
+     >
+
+     <button
+      class="btn"
+      onclick="saveSleep()"
+     >
+      Save
+     </button>
+
+    </div>
+
+   </div>
+
+
+   <div class="card">
+
+    <h3>
+     Recent nights
+    </h3>
+
+    ${
+     Object.entries(
+      data.sleep
+     )
+     .sort()
+     .slice(-7)
+     .reverse()
+     .map(
+
+      ([d,h])=>`
+
+       <div class="task">
+
+        <span>
+         ${d}
+        </span>
+
+        <strong>
+         ${h} hrs
+        </strong>
+
+       </div>
+
+      `
+
+     ).join("")
+
+     ||
+
+     `<div class="empty">
+       No sleep logged yet.
+      </div>`
+
+    }
+
+   </div>
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+function saveSleep() {
+
+ let v =
+  parseFloat(
+   sleepInput.value
+  );
+
+ if(
+  !isFinite(v)||
+  v<0||
+  v>24
+ )
+  return;
+
+ data.sleep[dayKey()]=v;
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   CALENDAR
+================================ */
+
+function renderCalendar() {
+
+ let now=new Date();
+
+ let y=
+  now.getFullYear();
+
+ let m=
+  now.getMonth();
+
+ let first=
+  new Date(
+   y,
+   m,
+   1
+  );
+
+ let days=
+  new Date(
+   y,
+   m+1,
+   0
+  ).getDate();
+
+ let cells="";
+
+ for(
+  let i=0;
+  i<first.getDay();
+  i++
+ ) {
+
+  cells+="<div></div>";
+
+ }
+
+ for(
+  let d=1;
+  d<=days;
+  d++
+ ) {
+
+  let dt=
+   new Date(
+    y,
+    m,
+    d
+   );
+
+  let k=
+   dayKey(dt);
+
+  let classes =
+   allDone(k)
+    ?"complete "
+    :"";
+
+  if(k===dayKey())
+   classes+="today";
+
+  cells+=`
+
+   <div
+    class="day ${classes}"
+    title="${k}"
+   >
+    ${d}
+   </div>
+
+  `;
+
+ }
+
+ shell(
+
+  "Calendar",
+
+  "Green means every current habit was completed or intentionally skipped.",
+
+  `
+
+  <div class="card">
+
+   <h3>
+    ${
+     now.toLocaleString(
+      undefined,
+      {
+       month:"long",
+       year:"numeric"
+      }
+     )
+    }
+   </h3>
+
+   <div class="calendar">
+
+    ${cells}
+
+   </div>
+
+   <p class="small">
+    🟢 All tasks accounted for · outline = today
+   </p>
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+/* ================================
+   REWARDS
+================================ */
+
+function renderRewards() {
+
+ shell(
+
+  "Rewards",
+
+  "XP levels you up. Coins can be exchanged for Skip Tokens.",
+
+  `
+
+  <div class="grid">
+
+   <div class="card">
+
+    <div class="label">
+     ⭐ XP
+    </div>
+
+    <div class="stat">
+     ${data.xp}
+    </div>
+
+    <div class="progress">
+
+     <div
+      style="
+       width:${data.xp%100}%
+      "
+     ></div>
+
+    </div>
+
+    <div class="small">
+     Level ${data.level}
+     · ${
+      100-data.xp%100
+     } XP to next level
+    </div>
+
+   </div>
+
+
+   <div class="card">
+
+    <div class="label">
+     🪙 Coins
+    </div>
+
+    <div class="stat coin">
+     ${data.coins}
+    </div>
+
+    <button
+     class="btn"
+     onclick="buySkip()"
+    >
+     Buy Skip Token · 50 coins
+    </button>
+
+   </div>
+
+
+   <div class="card wide">
+
+    <div class="label">
+     ⏭️ Skip Tokens
+    </div>
+
+    <div class="stat">
+     ${data.skip}
+    </div>
+
+    <div class="small">
+     A skip accounts for the task
+     without awarding its XP or coins.
+    </div>
+
+   </div>
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+function buySkip() {
+
+ if(data.coins<50) {
+
+  alert(
+   "You need 50 coins."
+  );
+
+  return;
+
+ }
+
+ data.coins-=50;
+
+ data.skip++;
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   SETTINGS
+================================ */
+
+function renderSettings() {
+
+ shell(
+
+  "Settings",
+
+  "Account, appearance, and cloud sync.",
+
+  `
+
+  <div class="card">
+
+   <h3>
+    Signed in
+   </h3>
+
+   <div class="small">
+    ${user?.email||""}
+   </div>
+
+   <br>
+
+   <button
+    class="btn secondary"
+    onclick="logout()"
+   >
+    Sign out
+   </button>
+
+  </div>
+
+
+  <div class="card">
+
+   <h3>
+    Appearance
+   </h3>
+
+   <div class="row">
+
+    <button
+     class="btn ${
+      data.theme==="light"
+       ?""
+       :"secondary"
+     }"
+     onclick="setTheme('light')"
+    >
+     ☀️ Light
+    </button>
+
+    <button
+     class="btn ${
+      data.theme==="dark"
+       ?""
+       :"secondary"
+     }"
+     onclick="setTheme('dark')"
+    >
+     🌙 Dark
+    </button>
+
+    <button
+     class="btn ${
+      data.theme==="system"
+       ?""
+       :"secondary"
+     }"
+     onclick="setTheme('system')"
+    >
+     📱 System
+    </button>
+
+   </div>
+
+  </div>
+
+
+  <div class="card">
+
+   <h3>
+    Cloud
+   </h3>
+
+   <button
+    class="btn"
+    onclick="
+     syncCloud();
+     alert('Sync started.')
+    "
+   >
+    ☁️ Sync now
+   </button>
+
+   <p class="small">
+    Your LifeLevel data is stored
+    in your account and can be loaded
+    on another device after signing in.
+   </p>
+
+  </div>
+
+  `
+
+ );
+
+}
+
+
+function setTheme(t) {
+
+ data.theme=t;
+
+ applyTheme();
+
+ save();
+
+ render();
+
+}
+
+
+/* ================================
+   RENDER
+================================ */
+
+function render() {
+
+ renderNav();
+
+ if(data.tab==="home")
+  renderHome();
+
+ else if(data.tab==="habits")
+  renderHabits();
+
+ else if(data.tab==="water")
+  renderWater();
+
+ else if(data.tab==="sleep")
+  renderSleep();
+
+ else if(data.tab==="calendar")
+  renderCalendar();
+
+ else if(data.tab==="rewards")
+  renderRewards();
+
+ else if(data.tab==="settings")
+  renderSettings();
+
+}
+
+
+/* ================================
+   START APP
+================================ */
+
+async function start() {
+
+ loadLocal();
+
+ applyTheme();
+
+ renderAuth();
+
+ const sessionResult =
+  await client.auth.getSession();
+
+ user =
+  sessionResult.data
+   .session?.user ||
+  null;
+
+ if(user) {
+
+  auth.classList.add(
+   "hidden"
+  );
+
+  appUI.classList.remove(
+   "hidden"
+  );
+
+  await loadCloud();
+
+  render();
+
+ }
+
+ client.auth.onAuthStateChange(
+
+  async (_event,session) => {
+
+   user =
+    session?.user||null;
+
+   if(user) {
+
+    auth.classList.add(
+     "hidden"
+    );
+
+    appUI.classList.remove(
+     "hidden"
+    );
+
+    await loadCloud();
+
+    render();
+
+   }
+
+  }
+
+ );
+
+}
+
+
+matchMedia(
+ "(prefers-color-scheme: dark)"
+)
+.addEventListener(
+ "change",
+ applyTheme
+);
+
+
+start();
+
 </script>
-<script>if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+
+<script>
+
+if("serviceWorker" in navigator) {
+
+ navigator.serviceWorker.register(
+  "sw.js"
+ );
+
+}
+
+</script>
+
 </body>
 </html>
