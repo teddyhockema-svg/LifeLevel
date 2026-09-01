@@ -1,9 +1,9 @@
 {
-  "name":"LifeLevel",
-  "short_name":"LifeLevel",
-  "start_url":"./",
-  "display":"standalone",
-  "background_color":"#f5f7fb",
-  "theme_color":"#6c63ff",
-  "description":"A friendly habit, hydration, sleep, streak and rewards tracker."
+  "name": "LifeLevel",
+  "short_name": "LifeLevel",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#6c63ff",
+  "description": "A friendly habit, hydration, sleep, streak and rewards tracker."
 }
